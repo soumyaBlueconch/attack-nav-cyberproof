@@ -5,6 +5,7 @@ import { NavAppRoutingModule } from './nav-app-routing.module';
 import { NavAppComponent } from './nav-app.component';
 import { TabsComponent } from './tabs/tabs.component';
 
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { TabsComponent } from './tabs/tabs.component';
   ],
   imports: [
     CommonModule,
+    SharedModule,
     NavAppRoutingModule
   ]
 })
