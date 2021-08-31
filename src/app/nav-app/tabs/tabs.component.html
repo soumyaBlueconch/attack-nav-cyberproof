@@ -1,2 +1,73 @@
 
-<mat-slider min="1" max="100" step="1" value="50"></mat-slider>
+
+<!-- Tabs display -->
+<div [style.margin-top]="hasFeature('header') ? '0px' : '15px'" *ngIf="layerTabs.length > 0 && hasFeature('tabs')">
+  <ul class="tabs">
+    <!-- dynamic tabs (can be opened and closed) -->
+    <li *ngFor="let tab of layerTabs; let $i = index" (click)="selectTab(tab)" [class.active]="tab == activeTab">
+      <span *ngIf="!tab == activeTab || !tab.isDataTable" class="tab-title"
+        [style.cursor]="tab == activeTab ? 'default' : 'pointer'">{{tab.isDataTable ? tab.dataContext.name :
+        tab.title}}</span>
+      <input *ngIf="!(!tab == activeTab || !tab.isDataTable)"
+        [style.cursor]="tab == activeTab ? tab.isDataTable ? 'text' : 'default' : 'pointer'" type="text"
+        [(ngModel)]="tab.dataContext.name"
+        [style.width]="tab.isDataTable ? ((tab.dataContext.name.length) * 8.4) + 'px' : (tab.title.length * 8.4) + 'px' ">
+      <span class="tab-close" *ngIf="tab.isCloseable" (click)="closeTab(tab)">x</span>
+
+      <!-- tab enumerator (for layer operations) -->
+      <span class="tabEnumerator"
+        *ngIf="getActiveTab().showScoreVariables && tab.isDataTable && (!domain || tab.domain === domain) && alphabetical(indexToChar($i))">{{indexToChar($i)}}</span>
+    </li>
+
+    <!-- open new tab button -->
+    <li *ngIf="layerTabs.length < 10" class="addTab" (click)="newBlankTab()">+</li>
+  </ul>
+</div>
+<div *ngIf="layerTabs.length == 0" class="newTab">
+  <!-- you shouldn't ever see this, but just in case -->
+  <button (click)="newBlankTab()">Start</button>
+</div>
+
+<ng-template [ngIf]="activeTab && !activeTab.isDataTable">
+  <div class="newTab border">
+    <mat-accordion class="headers-align">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Open Existing Layer </mat-panel-title>
+          <mat-panel-description>
+            Load a layer from your computer or a URL
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <table class="inputTable">
+          <tr>
+            <!-- Upload file from local -->
+            <td>
+              <button mat-button (click)="openUploadPrompt()">
+                Upload from local
+              </button>
+              <input id="uploader" type="file" style="display: none" (change)="loadLayerFromFile()" />
+            </td>
+
+            <td><b style="font-size: 8pt">OR</b></td>
+
+            <!-- Upload layer via URL -->
+            <td>
+              <mat-form-field>
+                <input type="text" matInput placeholder="Load from URL" [(ngModel)]="loadURL" />
+                <button mat-button matSuffix mat-icon-button aria-label="go" *ngIf="loadURL"
+                  (click)="loadLayerFromURL(loadURL, true)">
+                  >
+                </button>
+              </mat-form-field>
+            </td>
+          </tr>
+        </table>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- Help dialog -->
+    <div class="helpButtonContainer">
+      <button mat-button>help</button>
+    </div>
+  </div>
+</ng-template>
