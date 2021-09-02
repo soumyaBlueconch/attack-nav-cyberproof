@@ -10,11 +10,19 @@ import { SharedModule } from '../shared/shared.module';
 import { VersionUpgradeComponent } from './version-upgrade/version-upgrade.component';
 
 import { HttpClientModule } from '@angular/common/http';
+import { DataTableComponent } from './data-table/data-table.component';
+import { MatrixSideComponent } from './matrix/matrix-side/matrix-side.component';
+import { TacticCellComponent } from './matrix/tactic-cell/tactic-cell.component';
+import { TechniqueCellComponent } from './matrix/technique-cell/technique-cell.component';
 @NgModule({
   declarations: [
     NavAppComponent,
     TabsComponent,
-    VersionUpgradeComponent
+    VersionUpgradeComponent,
+    DataTableComponent,
+    MatrixSideComponent,
+    TacticCellComponent,
+    TechniqueCellComponent,
   ],
   imports: [
     CommonModule,

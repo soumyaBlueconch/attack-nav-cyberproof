@@ -71,3 +71,6 @@
     </div>
   </div>
 </ng-template>
+<ng-template [ngIf]="activeTab && activeTab.isDataTable">
+  <DataTable [viewModel]="activeTab.dataContext"></DataTable>
+</ng-template>
