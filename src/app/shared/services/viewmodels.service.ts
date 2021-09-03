@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+    import { Injectable } from '@angular/core';
 import { DataService, Technique, Tactic, Matrix, Domain } from "./data.service";
 // declare var tinygradient: any; //use tinygradient
 import * as tinygradient from 'tinygradient'

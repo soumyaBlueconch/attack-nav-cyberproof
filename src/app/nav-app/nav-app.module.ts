@@ -30,7 +30,9 @@ import { TechniqueCellComponent } from './matrix/technique-cell/technique-cell.c
     FormsModule,
     NavAppRoutingModule,
     HttpClientModule
-
+  ],
+  exports:[
+    NavAppComponent
   ]
 })
 export class NavAppModule { }
