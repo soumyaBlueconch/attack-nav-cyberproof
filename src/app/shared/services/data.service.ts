@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 // import { Http } from '@angular/http'
-import { Observable,forkJoin  } from "rxjs";
+import { Observable, forkJoin } from "rxjs";
 import { from } from 'rxjs';
 import { TaxiiConnect, Server, Collections, Collection, Status } from '../taxii2lib';
 
@@ -13,19 +13,29 @@ export class DataService {
     constructor(private http: HttpClient) {
         console.log("initializing data service singleton")
         let subscription = this.getConfig().subscribe({
-            next: (config:any) => {
+            next: (config: any) => {
                 this.setUpURLs(config["versions"]);
             },
             complete: () => { if (subscription) subscription.unsubscribe(); } //prevent memory leaks
         })
     }
-
-    public domain_backwards_compatibility:any = {
+    async initializeDomains() {
+      return new Promise((resolve,reject)=>{
+        let subscription = this.getConfig().subscribe({
+            next: (config: any) => {
+                this.setUpURLs(config["versions"]);
+                resolve(1)
+            },
+            complete: () => { if (subscription) subscription.unsubscribe();  reject(0)} //prevent memory leaks
+        })
+      })
+    }
+    public domain_backwards_compatibility: any = {
         "mitre-enterprise": "enterprise-attack",
         "mitre-mobile": "mobile-attack"
     }
     public domains: Domain[] = [];
-    public versions: any[] = [];
+    public versions: string[] = ["ATT&CK v9", "ATT&CK v8", "ATT&CK v7", "ATT&CK v6", "ATT&CK v5", "ATT&CK v4"]
 
     public subtechniquesEnabled: boolean = true;
 
@@ -52,7 +62,7 @@ export class DataService {
                 // ignore deprecated and revoked objects in the bundle
                 if (sdo.x_mitre_deprecated || sdo.revoked) continue;
                 // parse according to type
-                switch(sdo.type) {
+                switch (sdo.type) {
                     case "intrusion-set":
                         domain.groups.push(new Group(sdo, this));
                         break;
@@ -162,7 +172,7 @@ export class DataService {
     }
 
     // Observable for data in config.json
-    private configData$: Observable<Object> |any;
+    private configData$: Observable<Object> | any;
 
     // Observable for data
     private domainData$: Observable<Object> | any;
@@ -176,11 +186,11 @@ export class DataService {
      * @param {versions} list of versions and domains defined in the configuration file
      * @memberof DataService
      */
-    setUpURLs(versions: []){
-        versions.forEach( (version: any) => {
+    setUpURLs(versions: []) {
+        versions.forEach((version: any) => {
             let v: string = version["name"];
             this.versions.push(v);
-            version["domains"].forEach( (domain: any) => {
+            version["domains"].forEach((domain: any) => {
                 let id = this.getDomainID(domain["name"], v);
                 let name = domain["name"];
                 let domainObject = new Domain(id, name, v)
@@ -213,7 +223,7 @@ export class DataService {
      * get the current config
      * @param {boolean} refresh: if true fetches the config from file. Otherwise, only fetches if it's never been fetched before
      */
-    getConfig(refresh:boolean = false){
+    getConfig(refresh: boolean = false) {
         if (refresh || !this.configData$) {
             this.configData$ = this.http.get("./assets/config.json");
         }
@@ -223,7 +233,7 @@ export class DataService {
     /**
      * Fetch the domain data from the endpoint
      */
-    getDomainData(domain: any, refresh: boolean = false) : Observable<Object>{
+    getDomainData(domain: any, refresh: boolean = false): Observable<Object> {
         if (domain.taxii_collection && domain.taxii_url) {
             console.log("fetching data from TAXII server");
             let conn = new TaxiiConnect(domain.taxii_url, '', '', 5000);
@@ -240,7 +250,7 @@ export class DataService {
         } else if (refresh || !this.domainData$) {
             console.log("retrieving data", domain.urls)
             let bundleData: Observable<Object>[] = [];
-            domain.urls.forEach((url:any) => {
+            domain.urls.forEach((url: any) => {
                 bundleData.push(this.http.get(url));
             });
 
@@ -252,7 +262,7 @@ export class DataService {
     /**
      * Load and parse domain data
      */
-     loadDomainData(domainID: string, refresh: boolean = false): Promise<any> {
+    loadDomainData(domainID: string, refresh: boolean = false): Promise<any> {
         let dataPromise: Promise<any> = new Promise((resolve, reject) => {
             let domain = this.getDomain(domainID);
             if (domain) {
@@ -273,7 +283,7 @@ export class DataService {
     /**
      * Get domain object by domain ID
      */
-    getDomain(domainID: string): Domain|any {
+    getDomain(domainID: string): Domain | any {
         return this.domains.find((d) => d.id === domainID);
     }
 
@@ -297,8 +307,8 @@ export class DataService {
     /**
      * Is the given version supported?
      */
-    isSupported(version: string |any) {
-        return version.match(/[0-9]/g)[0] < this.versions[this.versions.length - 1].match(/[0-9]/g)[0]? false : true;
+    isSupported(version: string | any) {
+        return version.match(/[0-9]/g)[0] < this.versions[this.versions.length - 1].match(/[0-9]/g)[0] ? false : true;
     }
 }
 
@@ -374,10 +384,10 @@ export class Technique extends BaseStix {
     constructor(stixSDO: any, subtechniques: Technique[], dataService: DataService) {
         super(stixSDO, dataService);
         this.platforms = stixSDO.x_mitre_platforms;
-      	if (stixSDO.x_mitre_data_sources !== undefined)
-		      this.datasources = stixSDO.x_mitre_data_sources.toString();
-	      else
-		      this.datasources = "";
+        if (stixSDO.x_mitre_data_sources !== undefined)
+            this.datasources = stixSDO.x_mitre_data_sources.toString();
+        else
+            this.datasources = "";
         this.tactics = stixSDO.kill_chain_phases.map((phase: { phase_name: any; }) => phase.phase_name);
 
         this.subtechniques = subtechniques;
@@ -393,7 +403,7 @@ export class Technique extends BaseStix {
      * @returns {string} ID for this technique under that tactic
      */
     public get_technique_tactic_id(tactic: string | Tactic): string {
-        let tactic_shortname = tactic instanceof Tactic? tactic.shortname : tactic;
+        let tactic_shortname = tactic instanceof Tactic ? tactic.shortname : tactic;
         if (!this.tactics.includes(tactic_shortname)) throw new Error(tactic_shortname + " is not a tactic of " + this.attackID);
         return this.attackID + "^" + tactic_shortname;
     }
@@ -449,10 +459,9 @@ export class Group extends BaseStix {
      */
     public used(domainID: string): string[] {
         let rels = this.dataService.getDomain(domainID).relationships.group_uses;
-        if (rels.has(this.id))
-        {
-           let o =  rels.get(this.id)
-        return o;
+        if (rels.has(this.id)) {
+            let o = rels.get(this.id)
+            return o;
         }
         else return [];
     }

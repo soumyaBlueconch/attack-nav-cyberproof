@@ -393,7 +393,7 @@ export class ViewModel {
 
     loadVMData() {
         if (!this.domainID || !this.dataService.getDomain(this.domainID).dataLoaded) {
-            console.log("subscribing to data loaded callback")
+            console.log(this.dataService.getDomain(this.domainID))
             let self = this;
             this.dataService.onDataLoad(this.domainID, function() {
                 self.initTechniqueVMs()
@@ -1085,9 +1085,9 @@ export class ViewModel {
      * restore the domain and version from a string
      * @param rep string to restore from
      */
-    deSerializeDomainID(rep: any): void {
+    async deSerializeDomainID(rep: any): Promise<any> {
         let obj = (typeof(rep) == "string")? JSON.parse(rep) : rep
-        this.name = obj.name
+        this.name = obj.name;
         this.version = this.dataService.getCurrentVersion(); // layer with no specified version defaults to current version
         if ("versions" in obj) {
             if ("attack" in obj.versions) {

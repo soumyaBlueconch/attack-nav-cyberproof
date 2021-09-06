@@ -24,7 +24,7 @@ import { TmplAstVariable } from '@angular/compiler'
 })
 export class DataTableComponent {
   // The ViewModel being used by this data-table
-  @Input() viewModel: ViewModel;
+  @Input() viewModel;
   currentDropdown: string = ""; //current dropdown menu
   constructor(
     public dataService: DataService,

@@ -1,12 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import *  as  scoredLayer from 'src/app/shared/JSONS/viewModel.json';
-@Component({
-  selector: 'app-nav-app',
-  templateUrl: './nav-app.component.html',
-  styleUrls: ['./nav-app.component.scss']
-})
-export class NavAppComponent implements OnInit {
-  inputScoredLayer = {
+{
     "name": "layer",
     "versions": {
         "attack": "9",
@@ -56,10 +48,4 @@ export class NavAppComponent implements OnInit {
     "tacticRowBackground": "#dddddd",
     "selectTechniquesAcrossTactics": true,
     "selectSubtechniquesWithParent": false
-}
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }
