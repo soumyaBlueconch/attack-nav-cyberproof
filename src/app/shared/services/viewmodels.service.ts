@@ -393,7 +393,6 @@ export class ViewModel {
 
     loadVMData() {
         if (!this.domainID || !this.dataService.getDomain(this.domainID).dataLoaded) {
-            console.log(this.dataService.getDomain(this.domainID))
             let self = this;
             this.dataService.onDataLoad(this.domainID, function() {
                 self.initTechniqueVMs()
