@@ -275,7 +275,7 @@ export class DataService {
                                 "external_references": [
                                     {
                                         "source_name": "mitre-attack",
-                                        "external_id": "T1548",
+                                        "external_id": "T15477",
                                         "url": "https://attack.mitre.org/techniques/T1548"
                                     }
                                 ],
@@ -291,10 +291,6 @@ export class DataService {
                                     {
                                         "kill_chain_name": "mitre-attack",
                                         "phase_name": "privilege-escalation"
-                                    },
-                                    {
-                                        "kill_chain_name": "mitre-attack",
-                                        "phase_name": "defense-evasion"
                                     },
                                     {
                                         "kill_chain_name": "mitre-attack",
